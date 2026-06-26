@@ -68,10 +68,10 @@ export const useVideoHandlers = ({
       logger.error(`[VIDEO_ERROR] Other video error for URL: ${currentEpisode.url}`);
       Toast.show({ 
         type: "error", 
-        text1: "视频播放失败，正在尝试其他播放源...",
-        text2: "请稍候"
+        text1: "视频播放失败...",
+        text2: "失败"
       });
-      usePlayerStore.getState().handleVideoError('other', currentEpisode.url);
+      // usePlayerStore.getState().handleVideoError('other', currentEpisode.url);
     }
   }, [currentEpisode?.url]);
 

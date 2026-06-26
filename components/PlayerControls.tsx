@@ -13,6 +13,7 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 import {Battery} from '@brightlayer-ui/react-native-progress-icons';
 import { useBatteryLevel, useBatteryState, BatteryState } from 'expo-battery';
+import { format } from 'date-fns';
 
 interface PlayerControlsProps {
   showControls: boolean;
@@ -106,7 +107,7 @@ export const PlayerControls: React.FC<PlayerControlsProps> = ({ showControls, se
       </View>
       <View style={styles.topRightContainer}>
         <Text style={styles.topTimeText}>
-          {new Intl.DateTimeFormat('en-GB', {hour: '2-digit',minute: '2-digit',hour12: false}).format(new Date())}
+          {format(new Date(), 'HH:mm')}
         </Text>
         {!Platform.isTV && (<Battery percent={batteryLevel*100} size={30} color={'#00bb5ea0'} charging={batteryState === BatteryState.CHARGING} outlined={false}/>)}
       </View>

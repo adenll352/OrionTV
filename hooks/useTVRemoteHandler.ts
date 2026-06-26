@@ -92,8 +92,8 @@ export const useTVRemoteHandler = () => {
         case "longLeft":
           if (!fastForwardIntervalRef.current && event.eventKeyAction === 0) {
             fastForwardIntervalRef.current = setInterval(() => {
-              seek(-SEEK_STEP); 
-            }, 200);
+              seek(-SEEK_STEP*2); 
+            }, 100);
           }
           break;
         case "right":
@@ -103,8 +103,8 @@ export const useTVRemoteHandler = () => {
           // 长按开始: 启动连续快进
           if (!fastForwardIntervalRef.current && event.eventKeyAction === 0) {
             fastForwardIntervalRef.current = setInterval(() => {
-              seek(SEEK_STEP); 
-            }, 200);
+              seek(SEEK_STEP*2); 
+            }, 100);
           }
           break;
         case "down":
