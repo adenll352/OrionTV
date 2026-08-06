@@ -71,7 +71,7 @@ export const useVideoHandlers = ({
         text1: "视频播放失败...",
         text2: "失败"
       });
-      // usePlayerStore.getState().handleVideoError('other', currentEpisode.url);
+      usePlayerStore.getState().handleVideoError('other', currentEpisode.url);
     }
   }, [currentEpisode?.url]);
 
