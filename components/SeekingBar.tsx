@@ -24,9 +24,9 @@ const formatTime = (milliseconds: number) => {
 };
 
 export const SeekingBar = () => {
-  const { isSeeking, seekPosition, status } = usePlayerStore();
-
-  if (!isSeeking || !status?.isLoaded) {
+  const { isSeeking, seekPosition, progressPosition, status, playbackRate } = usePlayerStore();
+  
+  if (!((isSeeking && status?.isLoaded) || playbackRate != 1)) {
     return null;
   }
 
@@ -36,7 +36,7 @@ export const SeekingBar = () => {
   return (
     <View style={styles.seekingContainer}>
       <Text style={styles.timeText}>
-        {formatTime(currentPositionMillis)} / {formatTime(durationMillis)}
+        {formatTime(isSeeking ? currentPositionMillis : status.positionMillis)} / {formatTime(durationMillis)}
       </Text>
       <View style={styles.seekingBarContainer}>
         <View style={styles.seekingBarBackground} />
@@ -44,7 +44,7 @@ export const SeekingBar = () => {
           style={[
             styles.seekingBarFilled,
             {
-              width: `${seekPosition * 100}%`,
+              width: `${(isSeeking ? seekPosition : progressPosition) * 100}%`,
             },
           ]}
         />

@@ -24,7 +24,7 @@ export const SourceSelectionModal: React.FC = () => {
   const { showSourceModal, setShowSourceModal, loadVideo, currentEpisodeIndex, status } = usePlayerStore();
   const { searchResults, detail, setDetail, allSourcesLoaded } = useDetailStore();
 
-  const onSelectSource = (index: number) => {
+  const onSelectSource = async (index: number) => {
     logger.debug("onSelectSource", index, searchResults[index].id, detail?.id);
     if (searchResults[index].id !== detail?.id) {
       const newDetail = searchResults[index];

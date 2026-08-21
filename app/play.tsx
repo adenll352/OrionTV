@@ -158,6 +158,7 @@ export default function PlayScreen() {
     handleVideoPlaybackStateChanged,
     setShowControls,
     togglePlayPause,
+    setPlaybackRate,
     // setShowNextEpisodeOverlay,
     savePlayRecord,
     reset,
@@ -224,7 +225,7 @@ export default function PlayScreen() {
     };
   }, [episodeIndex, source, position, setVideoRef, reset, loadVideo, id, q, title, videoYear, videoStype]);
 
-  // 1. 调节音量 (右侧)
+  // 调节音量 (右侧)
   const handleVolume = (direction:string) => {
     let next = direction === 'up' ? volume + 0.05 : volume - 0.05;
     next = Math.max(0, Math.min(1, next));
@@ -234,7 +235,7 @@ export default function PlayScreen() {
     setVolumeBarShow(new Date().getTime());
   };
 
-  // 2. 调节亮度 (左侧)
+  // 调节亮度 (左侧)
   const handleBrightness = (direction:string) => {
     let next = direction === 'up' ? brightness + 0.05 : brightness - 0.05;
     next = Math.max(0, Math.min(1, next));
@@ -244,7 +245,7 @@ export default function PlayScreen() {
     setBrightnessBarShow(new Date().getTime());
   };
 
-  // 3. 快进/快退
+  // 快进/快退
   const handleSeek = (direction:string) => {
     let seconds = direction == 'right' ? 20000 : -20000;
     seek(seconds)
@@ -258,6 +259,19 @@ export default function PlayScreen() {
     tvRemoteHandler.onScreenPress();
   });
 
+  // 长按双倍速度播放
+  const longPressGesture = Gesture.LongPress()
+  .minDuration(300) // 按住300ms后开始快进
+  .runOnJS(true)
+  .onStart((e) => {
+    if (showLockControls) return;
+    setPlaybackRate(2);
+  })
+  .onEnd(() => {
+    if (showLockControls) return;
+    setPlaybackRate(1);
+  })
+
   // --- 1. 双击手势 (播放/暂停) ---
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
@@ -267,11 +281,11 @@ export default function PlayScreen() {
       const { x } = event;
       if (x < screenWidth * 0.1) {
         // 快退
-        seek(-5000);
+        seek(-10000);
       }
       else if(x > screenWidth * 0.9) {
         // 快进
-        seek(5000);
+        seek(10000);
       }
       else {
         togglePlayPause()
@@ -359,7 +373,7 @@ export default function PlayScreen() {
       accumulativeY.current = 0;
     });
 
-  const taps = Gesture.Exclusive(doubleTap, singleTap);
+  const taps = Gesture.Exclusive(doubleTap, singleTap, longPressGesture);
   const composedGesture = Gesture.Race(panGesture, taps);
   
   const handelBack = async() => {

@@ -137,7 +137,7 @@ const usePlayerStore = create<PlayerState>((set, get) => ({
       isDetialLoading: true,
     });
     
-    const needsDetailInit = !detail || !episodes || episodes.length === 0 || detail.title !== title;
+    const needsDetailInit = !detail || !episodes || episodes.length === 0 || detail.title !== title || detail.source !== source;
     logger.info(`[PERF] Detail check - needsInit: ${needsDetailInit}, hasDetail: ${!!detail}, episodesCount: ${episodes?.length || 0}`);
     
     if (needsDetailInit) {
@@ -255,7 +255,34 @@ const usePlayerStore = create<PlayerState>((set, get) => ({
       const episodesMappingEnd = performance.now();
       logger.info(`[PERF] Episodes mapping (${episodes.length} episodes) took ${(episodesMappingEnd - episodesMappingStart).toFixed(2)}ms`);
       
-      const isFavorited = await FavoriteManager.isFavorited(source, id.toString());
+      let isFavorited = await FavoriteManager.isFavorited(source, id.toString());
+
+      if (!isFavorited) {
+        const favoritesData = await FavoriteManager.getAll();
+        const arrFavoritesData = Object.entries(favoritesData).map(item =>{
+          const [source, id] = item[0].split("+");
+          return {...item[1], source, id};
+        })
+        const findedFavorite = arrFavoritesData.find(item => {
+          const itemStype = item.total_episodes > 1 ? 'tv' : 'movie';
+          return item.title.replace(' ', '') == title && item.year == year && (stype !== undefined && itemStype === stype || stype === undefined)
+        });
+        if (findedFavorite) {
+          await FavoriteManager.remove(findedFavorite.source, findedFavorite.id);
+          const { poster, source_name } = detail;
+          const favoriteItem = {
+            cover: poster,
+            title,
+            poster,
+            source_name,
+            total_episodes: episodes.length,
+            search_title: q,
+            year: year || "",
+          };
+          const newIsFavorited = await FavoriteManager.toggle(source, id.toString(), favoriteItem);
+          isFavorited = true;
+        }
+      }
 
       set({
         isDetialLoading: false,

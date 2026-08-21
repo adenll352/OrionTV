@@ -100,7 +100,7 @@ export const useVideoHandlers = ({
     onError,
     disableAudioSessionManagement: false,
     playWhenInactive: false,
-    progressUpdateInterval: 1000,
+    progressUpdateInterval: 500,
     playInBackground: false,
     viewType: ViewType.SURFACE,
     disableFocus: true,
